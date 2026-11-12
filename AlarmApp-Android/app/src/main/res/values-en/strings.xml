@@ -37,7 +37,7 @@
     <string name="settings_language_system">System</string>
     <string name="settings_language_ko">한국어</string>
     <string name="settings_language_en">English</string>
-    <string name="permission_alarm_denied">Alarm permission is off, so alarms cannot ring.</string>
+    <string name="permission_alarm_denied">Notifications are off, so alarms cannot ring.</string>
     <string name="permission_open_settings">Open Settings</string>
     <string name="relative_later">in %1$dh %2$dm</string>
     <string name="relative_minutes_only">in %1$dm</string>
@@ -59,10 +59,10 @@
     <string name="common_ok">OK</string>
     <string name="settings_title">Settings</string>
     <string name="settings_permissions">Permissions</string>
-    <string name="settings_permission_alarm_body">Alarm permission is needed to ring at the time you set.</string>
+    <string name="settings_permission_alarm_body">Notification permission is needed to ring at the time you set.</string>
     <string name="alarm_open_app">Go to Mission</string>
     <string name="alarm_stop">Stop</string>
-    <string name="permission_settings_path">Go to Settings → Apps → Alarm Heaven and turn on Alarms.</string>
+    <string name="permission_settings_path">Go to Settings → Apps → Alarm Heaven → turn on Notifications.</string>
     <string name="settings_general">General</string>
     <string name="mission_complete">Mission complete! Good morning</string>
     <string name="mission_transcription_placeholder">Type it here exactly</string>
@@ -73,6 +73,8 @@
     <string name="prompt_selected_all">All</string>
     <string name="ring_date_format">EEEE, MMMM d</string>
     <string name="notification_channel_alarm">Alarm ringing</string>
+    <string name="permission_fullscreen_denied">Full-screen notifications are off, so the alarm screen may not open automatically on the lock screen. Please turn them on in Settings.</string>
+    <string name="cd_back">Back</string>
     <string name="alarm_time_format">%1$s %2$s</string>
     <string name="cd_toggle_alarm">Turn alarm on or off</string>
 </resources>

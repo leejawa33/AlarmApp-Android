@@ -3,7 +3,11 @@ package com.alarmheaven.alarm
 import com.alarmheaven.alarm.data.AlarmDao
 import com.alarmheaven.alarm.data.AlarmEntity
 import com.alarmheaven.alarm.domain.Alarm
+import com.alarmheaven.alarm.domain.AppLanguage
+import com.alarmheaven.alarm.service.AlarmPermissionStatus
 import com.alarmheaven.alarm.service.AlarmScheduler
+import com.alarmheaven.alarm.service.AppLanguageStore
+import com.alarmheaven.alarm.service.PermissionStatusSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -40,4 +44,13 @@ class FakeScheduler : AlarmScheduler {
         failWith?.let { throw it }
         stopped += alarmId
     }
+}
+
+class FakePermissions(var status: AlarmPermissionStatus = AlarmPermissionStatus.Ok) : PermissionStatusSource {
+    override fun current() = status
+}
+
+class FakeLanguageStore(var language: AppLanguage = AppLanguage.SYSTEM) : AppLanguageStore {
+    override fun get() = language
+    override fun set(language: AppLanguage) { this.language = language }
 }

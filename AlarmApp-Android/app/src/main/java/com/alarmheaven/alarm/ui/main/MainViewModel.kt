@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alarmheaven.alarm.domain.Alarm
 import com.alarmheaven.alarm.domain.AlarmSchedule
+import com.alarmheaven.alarm.service.AlarmPermissionStatus
 import com.alarmheaven.alarm.service.AlarmService
+import com.alarmheaven.alarm.service.PermissionStatusSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.Duration
@@ -28,7 +30,11 @@ data class MainUiState(
     val isLoaded: Boolean = false,
     val items: List<AlarmItem> = emptyList(),
     val error: Throwable? = null,
+    val permission: AlarmPermissionStatus = AlarmPermissionStatus.Ok,
 ) {
+    /** 켜진 알람이 있는데 울릴 수 없는 상태일 때만 경고한다(처음 켠 빈 화면에서는 보이지 않는다). */
+    val showPermissionBanner: Boolean get() = !permission.isOk && items.any { it.alarm.isEnabled }
+
     val isAtLimit: Boolean get() = items.size >= AlarmService.MAX_ALARMS
 }
 
@@ -37,9 +43,11 @@ data class MainUiState(
 class MainViewModel @Inject constructor(
     private val service: AlarmService,
     private val clock: Clock,
+    private val permissions: PermissionStatusSource,
 ) : ViewModel() {
 
     private val error = MutableStateFlow<Throwable?>(null)
+    private val permission = MutableStateFlow(permissions.current())
 
     /** 남은 시간 표시를 위해 매 분 경계마다 현재 시각을 새로 흘려 보낸다. */
     private val minuteTicks = flow {
@@ -51,7 +59,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    val uiState: StateFlow<MainUiState> = combine(service.observeAlarms(), minuteTicks, error) { alarms, now, err ->
+    val uiState: StateFlow<MainUiState> = combine(service.observeAlarms(), minuteTicks, error, permission) { alarms, now, err, perm ->
         MainUiState(
             isLoaded = true,
             items = alarms.map { alarm ->
@@ -59,12 +67,18 @@ class MainViewModel @Inject constructor(
                 AlarmItem(alarm, next?.let { AlarmSchedule.remaining(now, it) })
             },
             error = err,
+            permission = perm,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MainUiState())
 
     fun setEnabled(alarm: Alarm, enabled: Boolean) = run { service.setEnabled(alarm, enabled) }
 
     fun delete(alarm: Alarm) = run { service.delete(alarm.id) }
+
+    /** 화면이 다시 보일 때마다(설정에서 돌아온 직후 등) 권한 상태를 새로 읽는다. */
+    fun refreshPermission() {
+        permission.value = permissions.current()
+    }
 
     fun dismissError() {
         error.value = null

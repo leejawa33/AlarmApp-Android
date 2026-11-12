@@ -9,7 +9,11 @@ import com.alarmheaven.alarm.catalog.assetReader
 import com.alarmheaven.alarm.catalog.loadPrompts
 import com.alarmheaven.alarm.data.AlarmDao
 import com.alarmheaven.alarm.data.AppDatabase
+import com.alarmheaven.alarm.platform.AndroidAppLanguageStore
+import com.alarmheaven.alarm.platform.AndroidPermissionStatusSource
 import com.alarmheaven.alarm.service.AlarmScheduler
+import com.alarmheaven.alarm.service.AppLanguageStore
+import com.alarmheaven.alarm.service.PermissionStatusSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,4 +51,13 @@ object AppModule {
     @Singleton
     fun provideScheduler(@ApplicationContext context: Context, clock: Clock): AlarmScheduler =
         AndroidAlarmScheduler(context, clock)
+
+    @Provides
+    @Singleton
+    fun providePermissionStatusSource(@ApplicationContext context: Context): PermissionStatusSource =
+        AndroidPermissionStatusSource(context)
+
+    @Provides
+    @Singleton
+    fun provideAppLanguageStore(): AppLanguageStore = AndroidAppLanguageStore()
 }

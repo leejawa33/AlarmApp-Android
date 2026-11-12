@@ -2,6 +2,14 @@ package com.alarmheaven.alarm.ui.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import com.alarmheaven.alarm.ui.settings.PermissionProblem
+import com.alarmheaven.alarm.ui.components.RoundButton
+import com.alarmheaven.alarm.ui.components.GhostButton
+import com.alarmheaven.alarm.service.AlarmPermissionStatus
+import com.alarmheaven.alarm.platform.openAlarmPermissionSettings
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.Lifecycle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -77,11 +85,14 @@ import com.alarmheaven.alarm.ui.weekdaySummary
 fun MainScreen(
     onAdd: () -> Unit,
     onEdit: (alarmId: String) -> Unit,
+    onSettings: () -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val askNotification = rememberAskNotificationPermission()
+    // 설정 앱에서 돌아오면 바로 반영한다.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME, onEvent = viewModel::refreshPermission)
 
     Box(
         Modifier
@@ -101,7 +112,11 @@ fun MainScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
     ) {
         Column(Modifier.fillMaxSize()) {
-            Header()
+            Header(onSettings)
+            // 켜진 알람이 있는데 울릴 수 없는 상태면 눈에 띄게 알린다.
+            if (state.showPermissionBanner) {
+                PermissionBanner(state.permission, onOpenSettings = { context.openAlarmPermissionSettings(state.permission) })
+            }
             when {
                 !state.isLoaded -> Unit
                 state.items.isEmpty() -> EmptyState(Modifier.weight(1f))
@@ -138,15 +153,33 @@ fun MainScreen(
 }
 
 @Composable
-private fun Header() {
+private fun Header(onSettings: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 8.dp),
+            .padding(start = 20.dp, end = 16.dp, top = 12.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Wordmark(stringResource(R.string.app_display_name))
-        // 설정(톱니바퀴)은 설정 화면 단계에서 추가한다.
+        Wordmark(stringResource(R.string.app_display_name), modifier = Modifier.weight(1f))
+        RoundButton(onClick = onSettings) {
+            Icon(Icons.Default.Settings, contentDescription = stringResource(R.string.settings_title), tint = TextMuted)
+        }
+    }
+}
+
+@Composable
+private fun PermissionBanner(status: AlarmPermissionStatus, onOpenSettings: () -> Unit) {
+    Column(
+        Modifier
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .fillMaxWidth()
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .border(1.dp, Cta.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        PermissionProblem(status)
+        GhostButton(stringResource(R.string.permission_open_settings), onClick = onOpenSettings, modifier = Modifier.fillMaxWidth())
     }
 }
 

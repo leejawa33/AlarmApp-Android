@@ -55,5 +55,13 @@
             </intent-filter>
         </receiver>
 
+        <!-- Android 12 이하에서 앱별 언어 선택을 저장한다(13+는 시스템이 저장) -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data android:name="autoStoreLocales" android:value="true" />
+        </service>
+
     </application>
 </manifest>

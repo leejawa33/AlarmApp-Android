@@ -1,7 +1,6 @@
 package com.alarmheaven.alarm.alarm
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -56,7 +55,7 @@ class RingingService : Service() {
         if (currentId == alarmId) return START_REDELIVER_INTENT
         currentId = alarmId
 
-        createChannel()
+        RingNotifications.ensureChannel(this)
         // 5초 안에 startForeground를 불러야 하므로 알람을 읽기 전에 먼저 기본 알림으로 시작한다.
         ServiceCompat.startForeground(
             this, NOTIFICATION_ID, notification(alarmId, title = getString(R.string.app_display_name)),
@@ -118,21 +117,11 @@ class RingingService : Service() {
         )
     }
 
-    private fun createChannel() {
-        val channel = NotificationChannel(CHANNEL_ID, getString(R.string.notification_channel_alarm), NotificationManager.IMPORTANCE_HIGH).apply {
-            setSound(null, null) // 소리는 서비스가 직접 낸다
-            enableVibration(false)
-            setBypassDnd(true)
-            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        }
-        getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-    }
-
     private fun notification(alarmId: String, title: String): Notification {
         val open = PendingIntent.getActivity(
             this, 0, ringActivityIntent(this, alarmId), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat.Builder(this, RingNotifications.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(getString(R.string.alarm_open_app))
@@ -147,7 +136,6 @@ class RingingService : Service() {
     }
 
     companion object {
-        private const val CHANNEL_ID = "alarm_ringing"
         private const val NOTIFICATION_ID = 1
 
         fun intent(context: Context, alarmId: String): Intent =

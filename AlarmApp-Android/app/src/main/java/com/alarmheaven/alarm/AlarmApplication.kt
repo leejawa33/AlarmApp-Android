@@ -1,6 +1,7 @@
 package com.alarmheaven.alarm
 
 import android.app.Application
+import com.alarmheaven.alarm.alarm.RingNotifications
 import com.alarmheaven.alarm.service.AlarmService
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -16,6 +17,7 @@ class AlarmApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        RingNotifications.ensureChannel(this)
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch { runCatching { alarmService.reconcile() } }
     }
 }

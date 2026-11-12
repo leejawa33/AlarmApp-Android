@@ -1,9 +1,11 @@
 package com.alarmheaven.alarm.ui
 
 import com.alarmheaven.alarm.FakeAlarmDao
+import com.alarmheaven.alarm.FakePermissions
 import com.alarmheaven.alarm.FakeScheduler
 import com.alarmheaven.alarm.TestAssets
 import com.alarmheaven.alarm.domain.AlarmSchedule
+import com.alarmheaven.alarm.service.AlarmPermissionStatus
 import com.alarmheaven.alarm.service.AlarmService
 import com.alarmheaven.alarm.service.SchedulingFailedException
 import com.alarmheaven.alarm.ui.main.MainViewModel
@@ -32,6 +34,7 @@ class MainViewModelTest {
     private val clock = Clock.fixed(Instant.parse("2026-11-10T21:00:00Z"), ZoneId.of("Asia/Seoul"))
     private val scheduler = FakeScheduler()
     private val service = AlarmService(FakeAlarmDao(), TestAssets.catalog(), scheduler)
+    private val permissions = FakePermissions()
 
     @Before
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -40,7 +43,7 @@ class MainViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     private fun TestScope.newViewModel(): MainViewModel {
-        val vm = MainViewModel(service, clock)
+        val vm = MainViewModel(service, clock, permissions)
         // WhileSubscribed 구독 유지. 즉시 시작해야 첫 값을 바로 읽을 수 있다.
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.uiState.collect {} }
         return vm
@@ -100,5 +103,31 @@ class MainViewModelTest {
         assertTrue(vm.uiState.value.error is SchedulingFailedException)
         vm.dismissError()
         assertNull(vm.uiState.value.error)
+    }
+
+    @Test
+    fun permissionBannerShowsOnlyWhenEnabledAlarmCannotRing() = runTest {
+        val vm = newViewModel()
+        permissions.status = AlarmPermissionStatus(notificationsEnabled = false, fullScreenAllowed = true)
+        vm.refreshPermission()
+        assertFalse(vm.uiState.value.showPermissionBanner) // 알람이 없으면 경고하지 않는다
+
+        create("꺼짐", enabled = false)
+        assertFalse(vm.uiState.value.showPermissionBanner) // 켜진 알람이 없어도 마찬가지
+
+        create("켜짐")
+        assertTrue(vm.uiState.value.showPermissionBanner)
+
+        permissions.status = AlarmPermissionStatus.Ok // 설정 앱에서 켜고 돌아옴
+        vm.refreshPermission()
+        assertFalse(vm.uiState.value.showPermissionBanner)
+    }
+
+    @Test
+    fun fullScreenOffAlsoWarns() = runTest {
+        create("켜짐")
+        permissions.status = AlarmPermissionStatus(notificationsEnabled = true, fullScreenAllowed = false)
+        val vm = newViewModel()
+        assertTrue(vm.uiState.value.showPermissionBanner)
     }
 }

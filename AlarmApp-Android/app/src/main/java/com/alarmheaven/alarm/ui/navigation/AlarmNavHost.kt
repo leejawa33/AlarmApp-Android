@@ -7,6 +7,8 @@ import androidx.navigation.compose.rememberNavController
 import com.alarmheaven.alarm.ui.edit.EditScreen
 import com.alarmheaven.alarm.ui.main.MainScreen
 import com.alarmheaven.alarm.ui.ring.RingScreen
+import com.alarmheaven.alarm.ui.settings.LanguageScreen
+import com.alarmheaven.alarm.ui.settings.SettingsScreen
 import kotlinx.serialization.Serializable
 
 /** 타입 안전 라우트. 인자 이름(`alarmId`)이 EditViewModel의 SavedStateHandle 키가 된다. */
@@ -30,6 +32,12 @@ data class Preview(
     val promptIds: String = "",
 )
 
+@Serializable
+data object Settings
+
+@Serializable
+data object Language
+
 @Composable
 fun AlarmNavHost() {
     val navController = rememberNavController()
@@ -38,6 +46,7 @@ fun AlarmNavHost() {
             MainScreen(
                 onAdd = { navController.navigate(Edit()) },
                 onEdit = { navController.navigate(Edit(it)) },
+                onSettings = { navController.navigate(Settings) },
             )
         }
         composable<Edit> {
@@ -49,6 +58,12 @@ fun AlarmNavHost() {
                     )
                 },
             )
+        }
+        composable<Settings> {
+            SettingsScreen(onBack = { navController.popBackStack() }, onLanguage = { navController.navigate(Language) })
+        }
+        composable<Language> {
+            LanguageScreen(onBack = { navController.popBackStack() })
         }
         composable<Preview> {
             RingScreen(onClose = { navController.popBackStack() })

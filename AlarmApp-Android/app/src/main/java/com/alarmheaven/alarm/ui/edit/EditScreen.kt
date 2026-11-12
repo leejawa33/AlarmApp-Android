@@ -66,6 +66,7 @@ import com.alarmheaven.alarm.ui.components.Block
 import com.alarmheaven.alarm.ui.components.Chip
 import com.alarmheaven.alarm.ui.components.CtaButton
 import com.alarmheaven.alarm.ui.components.GhostButton
+import com.alarmheaven.alarm.ui.components.RoundButton
 import com.alarmheaven.alarm.ui.errorMessage
 import com.alarmheaven.alarm.ui.mediaName
 import com.alarmheaven.alarm.ui.soundName
@@ -216,32 +217,16 @@ fun EditScreen(
 @Composable
 private fun TopBar(title: String, showDelete: Boolean, onCancel: () -> Unit, onDelete: () -> Unit) {
     Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 6.dp)) {
-        RoundTopButton(onClick = onCancel, modifier = Modifier.align(Alignment.CenterStart)) {
+        RoundButton(onClick = onCancel, modifier = Modifier.align(Alignment.CenterStart)) {
             Text(stringResource(R.string.edit_cancel), style = appText(13, FontWeight.ExtraBold, Cta))
         }
         Text(title, style = appText(17, FontWeight.ExtraBold), modifier = Modifier.align(Alignment.Center))
         if (showDelete) {
-            RoundTopButton(onClick = onDelete, modifier = Modifier.align(Alignment.CenterEnd)) {
+            RoundButton(onClick = onDelete, modifier = Modifier.align(Alignment.CenterEnd)) {
                 Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.edit_delete), tint = Cta, modifier = Modifier.size(20.dp))
             }
         }
     }
-}
-
-/** 흰 바탕 둥근 버튼(한국어 "취소"는 원, 영어 "Cancel"은 알약 모양이 된다) */
-@Composable
-private fun RoundTopButton(onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(
-        modifier
-            .heightIn(min = 44.dp)
-            .widthIn(min = 44.dp)
-            .background(Color.White, CircleShape)
-            .border(1.dp, Line, CircleShape)
-            .clip(CircleShape)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 12.dp),
-        contentAlignment = Alignment.Center,
-    ) { content() }
 }
 
 @Composable

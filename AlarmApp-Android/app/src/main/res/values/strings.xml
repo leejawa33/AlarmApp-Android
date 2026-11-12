@@ -37,7 +37,7 @@
     <string name="settings_language_system">시스템 설정</string>
     <string name="settings_language_ko">한국어</string>
     <string name="settings_language_en">English</string>
-    <string name="permission_alarm_denied">알람 권한이 꺼져 있어 알람을 울릴 수 없어요.</string>
+    <string name="permission_alarm_denied">알림이 꺼져 있어 알람을 울릴 수 없어요.</string>
     <string name="permission_open_settings">설정 열기</string>
     <string name="relative_later">%1$d시간 %2$d분 후</string>
     <string name="relative_minutes_only">%1$d분 후</string>
@@ -59,10 +59,10 @@
     <string name="common_ok">확인</string>
     <string name="settings_title">설정</string>
     <string name="settings_permissions">권한 안내</string>
-    <string name="settings_permission_alarm_body">설정한 시각에 알람을 울리려면 알람 권한이 필요해요.</string>
+    <string name="settings_permission_alarm_body">설정한 시각에 알람을 울리려면 알림 권한이 필요해요.</string>
     <string name="alarm_open_app">미션하러 가기</string>
     <string name="alarm_stop">끄기</string>
-    <string name="permission_settings_path">설정 → 앱 → 알람천국에서 알람을 켜 주세요.</string>
+    <string name="permission_settings_path">설정 → 앱 → 알람천국 → 알림을 켜 주세요.</string>
     <string name="settings_general">일반</string>
     <string name="mission_complete">미션 완료! 좋은 아침이에요</string>
     <string name="mission_transcription_placeholder">여기에 그대로 입력하세요</string>
@@ -73,6 +73,8 @@
     <string name="prompt_selected_all">전체</string>
     <string name="ring_date_format">M월 d일 EEEE</string>
     <string name="notification_channel_alarm">알람 울림</string>
+    <string name="permission_fullscreen_denied">전체 화면 알림이 꺼져 있어 잠금 화면에서 알람 화면이 자동으로 뜨지 않을 수 있어요. 설정에서 켜 주세요.</string>
+    <string name="cd_back">뒤로</string>
     <string name="alarm_time_format">%2$s %1$s</string>
     <string name="cd_toggle_alarm">알람 켜기 또는 끄기</string>
 </resources>

@@ -10,6 +10,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -166,4 +170,20 @@ fun Wordmark(name: String, modifier: Modifier = Modifier) {
         style = appText(26, FontWeight.ExtraBold),
         modifier = modifier,
     )
+}
+
+/** 흰 바탕 둥근 버튼(상단 취소·휴지통·설정·뒤로). 내용이 한 글자 폭이면 원, 길면 알약 모양이 된다. */
+@Composable
+fun RoundButton(onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(
+        modifier
+            .heightIn(min = 44.dp)
+            .widthIn(min = 44.dp)
+            .background(Color.White, CircleShape)
+            .border(1.dp, Line, CircleShape)
+            .clip(CircleShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) { content() }
 }
