@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 라이트 고정. 화면은 Compose가 그리므로 윈도우 배경만 맞춘다(시스템 바는 enableEdgeToEdge가 처리) -->
+    <style name="Theme.AlarmApp" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+    </style>
+</resources>

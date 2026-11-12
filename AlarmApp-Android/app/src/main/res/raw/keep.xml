@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 카탈로그 id(media_*, sound_*)로 문자열을 이름으로 조회(getIdentifier)하므로 리소스 축소가 지우지 않게 한다 -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/media_*,@string/sound_*" />

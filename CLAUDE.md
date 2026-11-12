@@ -6,7 +6,7 @@
 
 기준일: 2026-11-12
 
-**Android 앱(알람천국)을 새로 시작하는 단계입니다. 코드는 아직 없습니다.** iOS 앱은 Phase 1 구현을 마쳤고(테스트 통과, 실기기에는 설치해 봤지만 확인 목록의 결과는 아직 정리 전), 이 프로젝트는 그 기능을 **Android 네이티브로 따로 재구현**합니다. iOS와 코드는 공유하지 않습니다.
+**프로젝트 골격(`AlarmApp-Android/`)을 만들었고 `assembleDebug`·단위 테스트가 통과합니다. 도메인·저장 계층, 메인·편집 화면(미션 문장 고르기 포함), 실행 화면·미션·미리보기까지 구현했습니다**(단위 테스트 71개 통과, 실기기 화면 확인은 아직). iOS 앱은 Phase 1 구현을 마쳤고(테스트 통과, 실기기에는 설치해 봤지만 확인 목록의 결과는 아직 정리 전), 이 프로젝트는 그 기능을 **Android 네이티브로 따로 재구현**합니다. iOS와 코드는 공유하지 않습니다.
 
 이 폴더에는 인수 자료만 있습니다.
 - `docs/iOS_알람앱_기획서.md`: 제품 기획(단일 진실 원천). 2026-11-12 시점의 복사본이라 이후 iOS 쪽 원본과 달라질 수 있습니다. iOS 기준으로 쓰였으니 AlarmKit·SwiftData 같은 iOS 용어는 아래 "플랫폼 대응표"로 바꿔 읽습니다.
@@ -15,9 +15,12 @@
 - iOS 구현 참고용 저장소(읽기 전용): `/Users/leehyun/toy-project/AlarmApp-iOS-handoff` (GitHub `leejawa33/AlarmApp-iOS`). 도메인 로직은 그대로 옮길 수 있습니다: `AlarmApp-iOS/AlarmApp/Domain/`의 `AlarmSchedule`(다음 울림·남은 시간), `Weekday`(비트마스크), `ShakeCounter`, `TranscriptionPrompts`(+`PromptSelection`)와 `Services/AlarmService`. 구현 규칙은 그 저장소의 `CLAUDE.md`에 정리되어 있습니다. 세션을 `claude --add-dir /Users/leehyun/toy-project/AlarmApp-iOS-handoff`로 시작하면 바로 읽을 수 있습니다.
 
 **다음 할 일 (순서대로):**
-1. **개발 환경 준비** — 작성 시점(2026-11-12)에 이 Mac에서 Android Studio와 Android SDK를 **찾지 못했습니다**(JDK 19만 확인). 이미 설치했다면 이 항목은 건너뜁니다. 사용자가 Android Studio를 설치하고 SDK를 받아야 합니다. 실기기 테스트용으로 Android 폰의 개발자 옵션 → USB 디버깅도 필요합니다. 알람·화면 잠금 동작은 에뮬레이터로 검증하기 어렵습니다.
-2. **프로젝트 골격 만들기** — 이 폴더 안에 `AlarmApp-Android/` Gradle 프로젝트(Kotlin + Jetpack Compose)를 만들고, `shared-resources/`를 `app/src/main/assets/`로 복사합니다. 프로젝트를 만들기 전에 아래 "열린 결정"을 사용자와 정합니다.
-3. **도메인·저장** → **메인/편집 화면** → **알람 예약·울림 서비스** → **실행 화면·미션** → **설정·언어** 순서로 iOS와 같은 기능 범위를 구현합니다.
+1. ~~개발 환경 준비~~ **완료**(2026-11-12): Android Studio 2026.2, SDK platform 37·build-tools 36.0.0, 실기기 삼성 Galaxy Z Flip4(SM-F721N, Android 16/API 36) USB 디버깅 연결됨. 알람·화면 잠금 동작은 에뮬레이터로 검증하기 어려우니 이 실기기를 씁니다. 빌드는 터미널에서 `JAVA_HOME`을 Android Studio 번들 JBR(`/Applications/Android Studio.app/Contents/jbr/Contents/Home`)로 두고 `./gradlew`를 씁니다.
+2. ~~프로젝트 골격 만들기~~ **완료**(2026-11-12): 단일 모듈 `app`, AGP 9.5.1 + Gradle 9.6.0 + Kotlin 2.4.21 + KSP, Compose(BOM 2026.09.00), Hilt, Room, Navigation Compose, Media3. `minSdk 28`, `compileSdk 37`, `targetSdk 36`, 정확한 알람 권한은 `USE_EXACT_ALARM`. 버전은 `AlarmApp-Android/gradle/libs.versions.toml`. 아직 폰에 설치해 실행해 보지는 않았습니다.
+3. ~~도메인·저장~~ **완료**(2026-11-12): `domain/`(Weekday·AlarmSchedule·ShakeCounter·TranscriptionPrompts·Alarm), `catalog/AssetCatalog`, Room(`data/`), `service/AlarmService`(변경의 단일 진입점) + `AlarmScheduler` 인터페이스. **`AlarmScheduler`는 자리표시자 `NoOpAlarmScheduler`가 바인딩되어 있어 실제로 예약되지 않습니다**(알람 예약 단계에서 `AlarmManager` 구현으로 교체, `di/AppModule.kt`). Room DB는 JVM 단위 테스트로는 검증하지 않았고(가짜 DAO 사용) 실기기에서 실제로 열어 본 적도 없습니다. 흔들기 임계값 14.7 m/s²는 실기기 조정 전입니다.
+   **메인/편집 화면 구현됨**(2026-11-12): Compose + Hilt ViewModel(`ui/main`, `ui/edit`), 문구는 `shared-resources/Copy/ui_strings_*.json`을 `strings.xml`로 옮겼고(이후 `strings.xml`이 Android 기준) 두 언어 키·서식 일치 테스트가 있습니다. **아직 없는 것**: 설정 톱니바퀴·권한 경고 배너(설정·권한 단계). 타이포는 시스템 산세리프 굵게로 대체(둥근 폰트 번들은 미정). 편집 화면 시간 입력은 시각을 누르면 창이 뜨는 방식(iOS는 화면 안 휠)이고 상단 취소·휴지통도 iOS는 둥근 버튼이라 다듬을 여지가 있습니다. `NoOpAlarmScheduler` 때문에 아직 알람이 울리지 않습니다.
+   **실행 화면·미션·미리보기 구현됨**(2026-11-12, `ui/ring/`): 실행(음소거 반복 영상 + 날짜·`HH:mm`·타이틀·미션 시작) → 미션(흔들기 `TYPE_LINEAR_ACCELERATION`, 따라쓰기) → 완료(진동). 뒤로가기 차단·화면 켜짐 유지·소리는 `USAGE_ALARM`로 반복. **지금은 미리보기 전용**(라우트 `Preview`가 편집 중인 초안을 인자로 받고, 하단 `미리보기 종료`, 미션을 끝내도 알람을 멈추지 않음). 실제 울림 모드(`alarmId`로 열기, `completeMission` 호출, 소리는 서비스가 재생)는 알람 예약·울림 단계에서 추가합니다. 흔들기 센서가 없는 기기는 링을 눌러 셉니다. **실기기에서 영상·소리·흔들기 감도·한글 입력은 아직 확인 전입니다.**
+   다음: **알람 예약·울림 서비스**(`AlarmManager` 예약, 포그라운드 서비스, 전체 화면 인텐트, 부팅 후 재예약) → **설정·언어** 순서로 iOS와 같은 기능 범위를 구현합니다.
 4. **실기기 검증** — 아래 "확인 목록".
 
 ## 사용자와 작업 방식
@@ -90,10 +93,8 @@
 
 ## 열린 결정 (사용자와 먼저 정할 것)
 
-- `minSdk`/`targetSdk`: 제안은 minSdk 28 안팎 + 최신 targetSdk입니다. 사용자 폰의 Android 버전과 최근 정책에 맞춰 확정합니다.
-- 프로젝트 구성: 단일 모듈(`app`)로 시작하는 것을 제안합니다.
-- DI/내비게이션 라이브러리(Hilt, Navigation Compose 등)를 쓸지, 기본 구성으로 갈지.
-- Play 스토어 배포 시 알람 앱의 정확한 알람·전체 화면 알림 권한 선언 정책 확인.
+- (확정) `minSdk 28`/`targetSdk 36`, 단일 모듈 `app`, Hilt + Navigation Compose, `USE_EXACT_ALARM`.
+- Play 스토어 배포 시 알람 앱의 정확한 알람·전체 화면 알림 권한 선언 정책 확인(열림).
 
 ## 확인 목록 (실기기에서 확인할 것)
 
