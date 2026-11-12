@@ -1,6 +1,14 @@
 package com.alarmheaven.alarm.ui.edit
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.draw.clip
+import com.alarmheaven.alarm.ui.appLanguage
+import com.alarmheaven.alarm.ui.components.WheelPicker
+import com.alarmheaven.alarm.ui.theme.Line
+import java.util.Locale
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,13 +34,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,7 +53,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,7 +61,6 @@ import com.alarmheaven.alarm.domain.AlarmDraft
 import com.alarmheaven.alarm.domain.MissionType
 import com.alarmheaven.alarm.domain.PromptSelection
 import com.alarmheaven.alarm.domain.Weekday
-import com.alarmheaven.alarm.ui.alarmTime
 import com.alarmheaven.alarm.ui.components.Block
 import com.alarmheaven.alarm.ui.components.Chip
 import com.alarmheaven.alarm.ui.components.CtaButton
@@ -211,17 +213,33 @@ fun EditScreen(
 
 @Composable
 private fun TopBar(title: String, showDelete: Boolean, onCancel: () -> Unit, onDelete: () -> Unit) {
-    Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 8.dp)) {
-        TextButton(onClick = onCancel, modifier = Modifier.align(Alignment.CenterStart)) {
-            Text(stringResource(R.string.edit_cancel), style = appText(15, color = TextPrimary))
+    Box(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 6.dp)) {
+        RoundTopButton(onClick = onCancel, modifier = Modifier.align(Alignment.CenterStart)) {
+            Text(stringResource(R.string.edit_cancel), style = appText(13, FontWeight.ExtraBold, Cta))
         }
         Text(title, style = appText(17, FontWeight.ExtraBold), modifier = Modifier.align(Alignment.Center))
         if (showDelete) {
-            IconButton(onClick = onDelete, modifier = Modifier.align(Alignment.CenterEnd)) {
-                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.edit_delete), tint = Cta)
+            RoundTopButton(onClick = onDelete, modifier = Modifier.align(Alignment.CenterEnd)) {
+                Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.edit_delete), tint = Cta, modifier = Modifier.size(20.dp))
             }
         }
     }
+}
+
+/** 흰 바탕 둥근 버튼(한국어 "취소"는 원, 영어 "Cancel"은 알약 모양이 된다) */
+@Composable
+private fun RoundTopButton(onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(
+        modifier
+            .heightIn(min = 44.dp)
+            .widthIn(min = 44.dp)
+            .background(Color.White, CircleShape)
+            .border(1.dp, Line, CircleShape)
+            .clip(CircleShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) { content() }
 }
 
 @Composable
@@ -229,41 +247,40 @@ private fun ChipRow(content: @Composable RowScope.() -> Unit) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) { content() }
 }
 
-/** 큰 시각을 누르면 시간 선택 창이 열린다. */
-@OptIn(ExperimentalMaterial3Api::class)
+/** 시간: 화면 안 휠 3개(오전/오후 · 시 · 분). 한국어는 "오전 7 10", 영어는 "7 10 AM" 순서. */
 @Composable
 private fun TimeBlock(draft: AlarmDraft, onChange: (hour: Int, minute: Int) -> Unit) {
     val context = LocalContext.current
-    var picking by remember { mutableStateOf(false) }
+    val current by rememberUpdatedState(draft)
+    val periods = listOf(stringResource(R.string.am), stringResource(R.string.pm))
+    val hours = remember { (1..12).map { it.toString() } }
+    val minutes = remember { (0..59).map { String.format(Locale.ROOT, "%02d", it) } }
+    val periodFirst = context.appLanguage == "ko"
+
+    fun hour24(hour12: Int, pm: Boolean) = hour12 % 12 + if (pm) 12 else 0
+
+    @Composable
+    fun RowScope.Period() = WheelPicker(
+        periods, if (draft.hour < 12) 0 else 1,
+        onSelected = { onChange(hour24((current.hour % 12).let { if (it == 0) 12 else it }, it == 1), current.minute) },
+        modifier = Modifier.weight(1f),
+    )
 
     Block(stringResource(R.string.edit_time)) {
-        Text(
-            context.alarmTime(draft.hour, draft.minute),
-            style = appText(40, FontWeight.ExtraBold),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(role = Role.Button) { picking = true }
-                .padding(vertical = 8.dp),
-        )
-    }
-
-    if (picking) {
-        val timeState = rememberTimePickerState(initialHour = draft.hour, initialMinute = draft.minute, is24Hour = false)
-        AlertDialog(
-            onDismissRequest = { picking = false },
-            text = { TimePicker(state = timeState) },
-            confirmButton = {
-                TextButton(onClick = {
-                    onChange(timeState.hour, timeState.minute)
-                    picking = false
-                }) { Text(stringResource(R.string.common_ok), color = Cta) }
-            },
-            dismissButton = {
-                TextButton(onClick = { picking = false }) { Text(stringResource(R.string.edit_cancel), color = TextPrimary) }
-            },
-            containerColor = Color.White,
-        )
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            if (periodFirst) Period()
+            WheelPicker(
+                hours, (if (draft.hour % 12 == 0) 12 else draft.hour % 12) - 1,
+                onSelected = { onChange(hour24(it + 1, current.hour >= 12), current.minute) },
+                modifier = Modifier.weight(1f),
+            )
+            WheelPicker(
+                minutes, draft.minute,
+                onSelected = { onChange(current.hour, it) },
+                modifier = Modifier.weight(1f),
+            )
+            if (!periodFirst) Period()
+        }
     }
 }
 
