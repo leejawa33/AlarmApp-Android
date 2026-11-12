@@ -6,7 +6,7 @@ package com.alarmheaven.alarm.domain
  * - 한 번 흔들 때 여러 피크가 생기므로 [minInterval] 안의 피크는 무시
  * - 시작 직후 [warmUp] 동안(버튼을 누르는 손 움직임 등)은 세지 않는다
  *
- * 시간 단위는 초. 기준값 14.7 m/s² = 1.5g (iOS 값) — **실기기에서 조정 필요**.
+ * 시간 단위는 초. 기준값 4.0g ≈ 39.2 m/s². iOS는 1.5g였지만 Android 실기기(Galaxy Z Flip4)에서 너무 쉬워 올렸고 4.0g가 적당했다 — 값은 여기 한 곳이다.
  */
 class ShakeCounter(
     target: Int,
@@ -41,6 +41,6 @@ class ShakeCounter(
 
     companion object {
         const val G = 9.80665
-        const val DEFAULT_THRESHOLD = 1.5 * G
+        const val DEFAULT_THRESHOLD = 4.0 * G
     }
 }
