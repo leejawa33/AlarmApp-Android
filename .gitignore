@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# IDE
+.idea/
+*.iml
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
