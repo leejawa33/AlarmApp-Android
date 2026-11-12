@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -68,13 +69,15 @@ fun RingScreen(
     BackHandler(enabled = true) {} // 미션 완료 전에는 뒤로가기로 끌 수 없다
     KeepScreenOn()
     // 완료되면 소리를 멈춘다. 영상은 완료 화면으로 바뀌며 사라진다.
-    RingSound(state.info.soundFile, playing = state.phase != RingPhase.COMPLETE)
+    // 실제 울림의 소리는 서비스가 낸다. 미리보기만 이 화면이 직접 재생한다.
+    RingSound(state.info.soundFile, playing = state.isPreview && state.phase != RingPhase.COMPLETE)
 
     Column(Modifier.fillMaxSize().background(Color.Black).imePadding()) { // 키보드가 올라와도 종료 바가 보이게
         Box(Modifier.weight(1f)) {
+            if (!state.isLoaded) return@Box
             Crossfade(state.phase, label = "ringPhase") { phase ->
                 when (phase) {
-                    RingPhase.RING -> RingContent(state.info, onStartMission = viewModel::startMission)
+                    RingPhase.RING -> RingContent(state.info, isPreview = state.isPreview, onStartMission = viewModel::startMission)
                     RingPhase.MISSION -> {
                         val prompts = viewModel.prompts
                         val prompt = state.prompt
@@ -88,7 +91,7 @@ fun RingScreen(
                 }
             }
         }
-        PreviewBar(onEnd = viewModel::endPreview)
+        if (state.isPreview) PreviewBar(onEnd = viewModel::endPreview)
     }
 }
 
@@ -102,7 +105,7 @@ private fun KeepScreenOn() {
 }
 
 @Composable
-private fun RingContent(info: RingInfo, onStartMission: () -> Unit) {
+private fun RingContent(info: RingInfo, isPreview: Boolean, onStartMission: () -> Unit) {
     val context = LocalContext.current
     val now by produceState(LocalDateTime.now()) {
         while (true) {
@@ -122,7 +125,10 @@ private fun RingContent(info: RingInfo, onStartMission: () -> Unit) {
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         info.mediaFile?.let { LoopingVideo(it, Modifier.fillMaxSize()) }
         Column(
-            Modifier.fillMaxSize().statusBarsPadding().padding(top = 48.dp, bottom = 12.dp),
+            // 미리보기는 아래 바가 내비게이션 영역을 맡는다. 실제 울림은 버튼이 내비게이션 바에 가리지 않게 직접 비운다.
+            Modifier.fillMaxSize().statusBarsPadding()
+                .then(if (isPreview) Modifier else Modifier.navigationBarsPadding())
+                .padding(top = 48.dp, bottom = if (isPreview) 12.dp else 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val date = DateTimeFormatter

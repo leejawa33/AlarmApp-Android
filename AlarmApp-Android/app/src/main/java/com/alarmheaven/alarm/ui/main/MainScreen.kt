@@ -59,6 +59,7 @@ import com.alarmheaven.alarm.R
 import com.alarmheaven.alarm.ui.alarmTime
 import com.alarmheaven.alarm.ui.components.CtaButton
 import com.alarmheaven.alarm.ui.components.Wordmark
+import com.alarmheaven.alarm.ui.components.rememberAskNotificationPermission
 import com.alarmheaven.alarm.ui.errorMessage
 import com.alarmheaven.alarm.ui.remainingText
 import com.alarmheaven.alarm.ui.theme.Bg
@@ -80,6 +81,7 @@ fun MainScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val askNotification = rememberAskNotificationPermission()
 
     Box(
         Modifier
@@ -106,7 +108,10 @@ fun MainScreen(
                 else -> AlarmList(
                     items = state.items,
                     onClick = { onEdit(it.alarm.id) },
-                    onToggle = { item, enabled -> viewModel.setEnabled(item.alarm, enabled) },
+                    onToggle = { item, enabled ->
+                        if (enabled) askNotification()
+                        viewModel.setEnabled(item.alarm, enabled)
+                    },
                     onDelete = { viewModel.delete(it.alarm) },
                     modifier = Modifier.weight(1f),
                 )

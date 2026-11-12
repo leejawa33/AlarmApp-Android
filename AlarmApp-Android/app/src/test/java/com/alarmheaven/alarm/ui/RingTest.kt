@@ -5,6 +5,7 @@ import com.alarmheaven.alarm.FakeAlarmDao
 import com.alarmheaven.alarm.FakeScheduler
 import com.alarmheaven.alarm.TestAssets
 import com.alarmheaven.alarm.catalog.PromptProvider
+import com.alarmheaven.alarm.alarm.RingingState
 import com.alarmheaven.alarm.domain.MissionType
 import com.alarmheaven.alarm.service.AlarmService
 import com.alarmheaven.alarm.ui.ring.RingInfo
@@ -39,7 +40,17 @@ class RingTest {
     fun setUp() = Dispatchers.setMain(StandardTestDispatcher())
 
     @After
-    fun tearDown() = Dispatchers.resetMain()
+    fun tearDown() {
+        // 전역 상태를 먼저 지우고(수집 중인 코루틴이 Main에서 깨어날 수 있으므로) 그다음 Main을 되돌린다.
+        RingingState.alarmId.value?.let(RingingState::stop)
+        Dispatchers.resetMain()
+    }
+
+    private fun liveVm(alarmId: String) = RingViewModel(
+        SavedStateHandle(mapOf("alarmId" to alarmId)),
+        service,
+        PromptProvider { TestAssets.prompts() },
+    )
 
     private fun vm(
         title: String = "기상",
@@ -150,5 +161,61 @@ class RingTest {
         vm.endPreview()
         assertTrue(vm.state.value.closed)
         assertNotNull(vm.state.value.info)
+    }
+
+    // MARK: 실제 울림 모드
+
+    @Test
+    fun liveModeLoadsAlarmAndStopsItOnCompletion() = runTest(StandardTestDispatcher()) {
+        val alarm = service.create(
+            service.makeDefaultDraft().copy(title = "출근", mission = MissionType.TRANSCRIPTION, promptIds = listOf("study_01")),
+        )
+        RingingState.start(alarm.id)
+        val vm = liveVm(alarm.id)
+        assertFalse(vm.state.value.isLoaded)
+        testScheduler.runCurrent()
+        assertTrue(vm.state.value.isLoaded)
+        assertFalse(vm.state.value.isPreview)
+        assertEquals("출근", vm.state.value.info.title)
+        assertEquals(MissionType.TRANSCRIPTION, vm.state.value.info.mission)
+
+        vm.completeDisplayMillis = 500
+        vm.startMission()
+        vm.completeMission()
+        testScheduler.runCurrent()
+        assertEquals(listOf(alarm.id), scheduler.stopped) // 울리는 알람을 멈춘다
+        assertFalse(vm.state.value.closed)
+        testScheduler.advanceTimeBy(501)
+        testScheduler.runCurrent()
+        assertTrue(vm.state.value.closed)
+    }
+
+    /** 알람이 삭제돼도 미션은 해야 한다 → 기본 미디어·소리 + 흔들기 */
+    @Test
+    fun liveModeWithMissingAlarmFallsBackToDefaults() = runTest(StandardTestDispatcher()) {
+        RingingState.start("deleted")
+        val vm = liveVm("deleted")
+        testScheduler.runCurrent()
+        assertTrue(vm.state.value.isLoaded)
+        assertEquals(MissionType.SHAKE, vm.state.value.info.mission)
+        assertEquals(catalog.defaultMedia!!.file, vm.state.value.info.mediaFile)
+    }
+
+    @Test
+    fun liveModeClosesWhenRingingStopsElsewhere() = runTest(StandardTestDispatcher()) {
+        RingingState.start("a")
+        val vm = liveVm("a")
+        testScheduler.runCurrent()
+        assertFalse(vm.state.value.closed)
+        RingingState.stop("a")
+        testScheduler.runCurrent()
+        assertTrue(vm.state.value.closed)
+    }
+
+    @Test
+    fun previewNeverTouchesRingingState() {
+        assertNull(RingingState.alarmId.value)
+        assertTrue(vm().state.value.isPreview)
+        assertNull(RingingState.alarmId.value)
     }
 }

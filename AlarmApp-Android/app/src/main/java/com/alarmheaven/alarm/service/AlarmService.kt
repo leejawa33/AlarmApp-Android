@@ -114,6 +114,20 @@ class AlarmService @Inject constructor(
     }
 
     /**
+     * 알람이 울린 직후: 반복을 위해 다음 울림을 다시 예약한다(OS 예약은 한 번뿐). 실패는 삼킨다 —
+     * 이미 울리고 있고, 다음 앱 시작·재부팅의 [reconcile]이 다시 맞춘다.
+     */
+    suspend fun onFired(alarmId: String) {
+        val alarm = getAlarm(alarmId)?.takeIf { it.isEnabled } ?: return
+        try {
+            scheduler.schedule(alarm)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+        }
+    }
+
+    /**
      * DB 기준으로 OS 예약을 다시 맞춘다. 앱 시작·재부팅 후 호출한다
      * (Android는 재부팅하면 예약이 사라진다).
      * 켜진 알람은 모두 다시 schedule(upsert), 꺼진 알람은 cancel.

@@ -2,6 +2,7 @@ package com.alarmheaven.alarm.di
 
 import android.content.Context
 import androidx.room.Room
+import com.alarmheaven.alarm.alarm.AndroidAlarmScheduler
 import com.alarmheaven.alarm.catalog.AssetCatalog
 import com.alarmheaven.alarm.catalog.PromptProvider
 import com.alarmheaven.alarm.catalog.assetReader
@@ -9,7 +10,6 @@ import com.alarmheaven.alarm.catalog.loadPrompts
 import com.alarmheaven.alarm.data.AlarmDao
 import com.alarmheaven.alarm.data.AppDatabase
 import com.alarmheaven.alarm.service.AlarmScheduler
-import com.alarmheaven.alarm.service.NoOpAlarmScheduler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,8 +43,8 @@ object AppModule {
     fun providePromptProvider(@ApplicationContext context: Context, catalog: AssetCatalog): PromptProvider =
         PromptProvider { catalog.loadPrompts(context.assetReader()) }
 
-    // TODO(알람 예약 단계): AlarmManager.setAlarmClock() 구현체로 교체
     @Provides
     @Singleton
-    fun provideScheduler(): AlarmScheduler = NoOpAlarmScheduler()
+    fun provideScheduler(@ApplicationContext context: Context, clock: Clock): AlarmScheduler =
+        AndroidAlarmScheduler(context, clock)
 }

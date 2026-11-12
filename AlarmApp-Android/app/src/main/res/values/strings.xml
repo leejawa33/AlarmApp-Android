@@ -72,6 +72,7 @@
     <string name="prompt_selected_count">%1$d개 선택</string>
     <string name="prompt_selected_all">전체</string>
     <string name="ring_date_format">M월 d일 EEEE</string>
+    <string name="notification_channel_alarm">알람 울림</string>
     <string name="alarm_time_format">%2$s %1$s</string>
     <string name="cd_toggle_alarm">알람 켜기 또는 끄기</string>
 </resources>

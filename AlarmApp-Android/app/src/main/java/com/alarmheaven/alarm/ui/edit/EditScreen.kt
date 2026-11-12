@@ -7,6 +7,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.draw.clip
 import com.alarmheaven.alarm.ui.appLanguage
 import com.alarmheaven.alarm.ui.components.WheelPicker
+import com.alarmheaven.alarm.ui.components.rememberAskNotificationPermission
 import com.alarmheaven.alarm.ui.theme.Line
 import java.util.Locale
 import androidx.compose.foundation.clickable
@@ -87,6 +88,7 @@ fun EditScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showPromptPicker by remember { mutableStateOf(false) }
+    val askNotification = rememberAskNotificationPermission()
 
     LaunchedEffect(state.closed) { if (state.closed) onClose() }
 
@@ -160,7 +162,7 @@ fun EditScreen(
                 GhostButton(stringResource(R.string.edit_preview), onClick = { onPreview(state.draft) }, modifier = Modifier.weight(1f))
                 CtaButton(
                     stringResource(R.string.edit_save),
-                    onClick = viewModel::save,
+                    onClick = { askNotification(); viewModel.save() },
                     enabled = !state.isSaving,
                     height = 48.dp,
                     modifier = Modifier.weight(1f),

@@ -72,6 +72,7 @@
     <string name="prompt_selected_count">%1$d selected</string>
     <string name="prompt_selected_all">All</string>
     <string name="ring_date_format">EEEE, MMMM d</string>
+    <string name="notification_channel_alarm">Alarm ringing</string>
     <string name="alarm_time_format">%1$s %2$s</string>
     <string name="cd_toggle_alarm">Turn alarm on or off</string>
 </resources>

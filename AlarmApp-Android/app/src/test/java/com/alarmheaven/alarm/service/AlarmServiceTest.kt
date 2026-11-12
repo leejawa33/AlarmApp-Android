@@ -141,6 +141,26 @@ class AlarmServiceTest {
     }
 
     @Test
+    fun onFiredSchedulesNextOccurrenceOfEnabledAlarm() = runTest {
+        val alarm = service.create(draft())
+        scheduler.scheduled.clear() // OS 예약은 한 번뿐이라 울리면 사라진다
+        service.onFired(alarm.id)
+        assertEquals(alarm, scheduler.scheduled[alarm.id])
+    }
+
+    @Test
+    fun onFiredIgnoresMissingAndDisabledAlarmsAndSwallowsFailure() = runTest {
+        service.onFired("nope")
+        val off = service.create(draft().copy(isEnabled = false))
+        service.onFired(off.id)
+        assertTrue(scheduler.scheduled.isEmpty())
+
+        val on = service.create(draft("켜짐"))
+        scheduler.failWith = IllegalStateException("예약 실패")
+        service.onFired(on.id) // 이미 울리는 중이라 예외를 던지지 않는다
+    }
+
+    @Test
     fun reconcileSchedulesEnabledAndCancelsDisabled() = runTest {
         val on = service.create(draft("켜짐"))
         val off = service.create(draft("꺼짐").copy(isEnabled = false))
