@@ -4,23 +4,26 @@
 
 ## 현재 상태
 
-**Android 앱(알람천국)을 새로 시작하는 단계입니다. 코드는 아직 없습니다.** iOS 앱은 Phase 1 구현을 마쳤고(실기기 검증 전), 이 프로젝트는 그 기능을 **Android 네이티브로 따로 재구현**합니다. iOS와 코드는 공유하지 않습니다.
+기준일: 2026-11-12
+
+**Android 앱(알람천국)을 새로 시작하는 단계입니다. 코드는 아직 없습니다.** iOS 앱은 Phase 1 구현을 마쳤고(테스트 통과, 실기기에는 설치해 봤지만 확인 목록의 결과는 아직 정리 전), 이 프로젝트는 그 기능을 **Android 네이티브로 따로 재구현**합니다. iOS와 코드는 공유하지 않습니다.
 
 이 폴더에는 인수 자료만 있습니다.
-- `docs/iOS_알람앱_기획서.md`: 제품 기획(단일 진실 원천). iOS 기준으로 쓰였으니 AlarmKit·SwiftData 같은 iOS 용어는 아래 "플랫폼 대응표"로 바꿔 읽습니다.
+- `docs/iOS_알람앱_기획서.md`: 제품 기획(단일 진실 원천). 2026-11-12 시점의 복사본이라 이후 iOS 쪽 원본과 달라질 수 있습니다. iOS 기준으로 쓰였으니 AlarmKit·SwiftData 같은 iOS 용어는 아래 "플랫폼 대응표"로 바꿔 읽습니다.
 - `docs/design-preview.html`: 디자인 시안(HTML 목업, CSS 토큰). `docs/알람실행화면.png`: 실행 화면 레퍼런스(잠금화면이 아니라 **앱 안** 화면).
 - `shared-resources/`: iOS 앱에서 가져온 리소스(카탈로그, 한/영 문구, 따라쓰기 문장, 영상 3개, 소리 mp3 2개). Android 프로젝트에는 `app/src/main/assets/`에 **같은 폴더 구조로** 복사해서 씁니다.
-- iOS 구현 참고용 저장소(읽기 전용): `/Users/leehyun/toy-project/AlarmApp-iOS-handoff` (GitHub `leejawa33/AlarmApp-iOS`). 도메인 로직은 그대로 옮길 수 있습니다: `Domain/AlarmSchedule`(다음 울림·남은 시간), `Domain/Weekday`(비트마스크), `Domain/ShakeCounter`, `Domain/TranscriptionPrompts`·`PromptSelection`, `Services/AlarmService`. 세션을 `claude --add-dir /Users/leehyun/toy-project/AlarmApp-iOS-handoff`로 시작하면 바로 읽을 수 있습니다.
+- iOS 구현 참고용 저장소(읽기 전용): `/Users/leehyun/toy-project/AlarmApp-iOS-handoff` (GitHub `leejawa33/AlarmApp-iOS`). 도메인 로직은 그대로 옮길 수 있습니다: `AlarmApp-iOS/AlarmApp/Domain/`의 `AlarmSchedule`(다음 울림·남은 시간), `Weekday`(비트마스크), `ShakeCounter`, `TranscriptionPrompts`(+`PromptSelection`)와 `Services/AlarmService`. 구현 규칙은 그 저장소의 `CLAUDE.md`에 정리되어 있습니다. 세션을 `claude --add-dir /Users/leehyun/toy-project/AlarmApp-iOS-handoff`로 시작하면 바로 읽을 수 있습니다.
 
 **다음 할 일 (순서대로):**
-1. **개발 환경 준비** — 이 Mac에는 Android Studio와 Android SDK가 **없습니다**(JDK 19만 있음). 사용자가 Android Studio를 설치하고 SDK를 받아야 합니다. 실기기 테스트용으로 Android 폰의 개발자 옵션 → USB 디버깅도 필요합니다. 알람·화면 잠금 동작은 에뮬레이터로 검증하기 어렵습니다.
-2. **프로젝트 골격 만들기** — 이 폴더 안에 `AlarmApp-Android/` Gradle 프로젝트(Kotlin + Jetpack Compose)를 만들고, `shared-resources/`를 `app/src/main/assets/`로 복사합니다. 첫 커밋 전에 아래 "열린 결정"을 사용자와 정합니다.
+1. **개발 환경 준비** — 작성 시점(2026-11-12)에 이 Mac에서 Android Studio와 Android SDK를 **찾지 못했습니다**(JDK 19만 확인). 이미 설치했다면 이 항목은 건너뜁니다. 사용자가 Android Studio를 설치하고 SDK를 받아야 합니다. 실기기 테스트용으로 Android 폰의 개발자 옵션 → USB 디버깅도 필요합니다. 알람·화면 잠금 동작은 에뮬레이터로 검증하기 어렵습니다.
+2. **프로젝트 골격 만들기** — 이 폴더 안에 `AlarmApp-Android/` Gradle 프로젝트(Kotlin + Jetpack Compose)를 만들고, `shared-resources/`를 `app/src/main/assets/`로 복사합니다. 프로젝트를 만들기 전에 아래 "열린 결정"을 사용자와 정합니다.
 3. **도메인·저장** → **메인/편집 화면** → **알람 예약·울림 서비스** → **실행 화면·미션** → **설정·언어** 순서로 iOS와 같은 기능 범위를 구현합니다.
 4. **실기기 검증** — 아래 "확인 목록".
 
 ## 사용자와 작업 방식
 
 - 사용자는 15년차 백엔드 엔지니어입니다. Android 개념은 Spring 비유(Service, Repository, Entity, DTO 등)로 설명하면 잘 통합니다. **설명은 항상 한국어**로 합니다(진행 중 짧은 안내 문장까지).
+- **진행 상태는 `CLAUDE.md`의 "현재 상태·다음 할 일"에만 적습니다.** 기획서(`docs/`)는 요구사항·규칙·화면만 담고, "구현 완료", "검증 전", 다음 단계 체크리스트 같은 작업 상태는 쓰지 않습니다(바뀔 때 어긋나기 쉬움).
 - **새로 추가하는 모든 기능은 한국어와 영어를 함께 지원합니다.** 화면 문구, 버튼, 에러·권한 안내, 알림 문구, 접근성 라벨, 소리·미디어·미션 문장 이름까지 전부 대상입니다. 한쪽만 넣고 끝내지 않고, 두 언어의 키 일치를 검사하는 테스트를 둡니다.
 - 커밋·푸시는 사용자가 요청할 때만 합니다. 되돌리기 어려운 작업(삭제, 강제 푸시 등)은 먼저 확인합니다.
 - 코드 주석과 문서는 한국어로 씁니다.
@@ -68,7 +71,7 @@
 ## 리소스 규칙
 
 - `shared-resources/assets_catalog.json`이 미디어·소리·미션 목록의 기준입니다. 코드에 하드코딩하지 말고 카탈로그를 읽어 쓰세요. `file` 경로(`Media/...`, `Sounds/...`)는 `assets/` 아래 같은 구조에 두고 `AssetManager`로 엽니다(iOS와 달리 평탄화하지 않으므로 경로 그대로 사용 가능).
-- 카탈로그의 `alarmFile`(`.caf`)은 iOS 전용이라 Android에서는 무시합니다. 소리는 mp3만 씁니다.
+- 카탈로그의 `alarmFile`(`.caf`)은 iOS 전용이라 Android에서는 무시합니다. 소리는 mp3만 씁니다. `아침이 왔다잖아`(33.7초)는 iOS 알림 소리의 30초 제한 때문에 iOS에서 실기기 확인 대상이지만, Android는 앱이 직접 반복 재생하므로 같은 제한이 없을 것으로 봅니다(구현 후 확인).
 - **소리·미디어 표시명은 앱 언어를 따라갑니다.** 카탈로그 id(`media_...`, `sound_...`)를 키로 한/영 문구에서 찾고, 없으면 카탈로그 `displayName`(한국어)으로 대체합니다. 영어 이름: `Morning Has Come`, `Yar Song`, `Puppy Smash`, `Cat vs. Phone`, `Shaky Alarm`.
 - 따라쓰기 문장은 `Copy/transcription_prompts.json`(`categories` 한/영 표시명 + `prompts[].category` + `prompts[].text`의 같은 id에 `ko`/`en` 문장)입니다. 문장을 추가할 땐 두 언어를 함께 넣고, 띄어쓰기가 헷갈리지 않는 짧은 문장으로 씁니다. 영어는 첫 글자만 대문자, 중간 대문자·아포스트로피 금지(키보드가 ’로 바꿔 불일치할 수 있음).
 - 미디어 영상은 이미 렌더링되어 있습니다(1080×1920, 7초, 무음 반복). 생성 스크립트는 macOS 전용 Swift라 이 프로젝트에는 없습니다. 새 영상이 필요하면 iOS 저장소의 `AlarmApp-iOS/Tools/`를 참고하세요. 영상에는 날짜·시각(상단 1/3)과 미션 버튼(하단)을 가리는 연출을 넣지 않고, **화면 전체 번쩍임은 금지**(광과민성)입니다.
