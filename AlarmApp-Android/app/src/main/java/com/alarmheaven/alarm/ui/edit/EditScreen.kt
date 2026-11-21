@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.domain.AlarmDraft
-import com.alarmheaven.alarm.domain.MissionType
-import com.alarmheaven.alarm.domain.PromptSelection
-import com.alarmheaven.alarm.domain.Weekday
+import com.alarmheaven.alarm.domain.model.AlarmDraft
+import com.alarmheaven.alarm.domain.value.MissionType
+import com.alarmheaven.alarm.domain.value.PromptSelection
+import com.alarmheaven.alarm.domain.value.Weekday
 import com.alarmheaven.alarm.ui.components.Block
 import com.alarmheaven.alarm.ui.components.Chip
 import com.alarmheaven.alarm.ui.components.CtaButton

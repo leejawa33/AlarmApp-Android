@@ -2,11 +2,11 @@ package com.alarmheaven.alarm.ui.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alarmheaven.alarm.domain.Alarm
-import com.alarmheaven.alarm.domain.AlarmSchedule
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
-import com.alarmheaven.alarm.service.AlarmService
-import com.alarmheaven.alarm.service.PermissionStatusSource
+import com.alarmheaven.alarm.domain.model.Alarm
+import com.alarmheaven.alarm.domain.value.AlarmSchedule
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
+import com.alarmheaven.alarm.application.AlarmService
+import com.alarmheaven.alarm.application.PermissionStatusSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Clock
 import java.time.Duration

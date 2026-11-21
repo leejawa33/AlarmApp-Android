@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".AlarmApplication"
+        android:name=".app.AlarmApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_display_name"
@@ -21,7 +21,7 @@
         android:theme="@style/Theme.AlarmApp">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".app.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -32,7 +32,7 @@
 
         <!-- 알람 실행 화면: 잠금 화면 위로 뜨고 화면을 켠다 -->
         <activity
-            android:name=".RingActivity"
+            android:name=".app.RingActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -40,13 +40,13 @@
             android:turnScreenOn="true" />
 
         <service
-            android:name=".alarm.RingingService"
+            android:name=".adapter.alarm.RingingService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
 
-        <receiver android:name=".alarm.AlarmReceiver" android:exported="false" />
+        <receiver android:name=".adapter.alarm.AlarmReceiver" android:exported="false" />
 
-        <receiver android:name=".alarm.BootReceiver" android:exported="true">
+        <receiver android:name=".adapter.alarm.BootReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />

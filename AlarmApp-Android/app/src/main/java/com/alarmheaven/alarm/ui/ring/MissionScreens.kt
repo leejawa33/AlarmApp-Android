@@ -69,9 +69,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.domain.ShakeCounter
-import com.alarmheaven.alarm.domain.TranscriptionPrompt
-import com.alarmheaven.alarm.domain.TranscriptionPrompts
+import com.alarmheaven.alarm.domain.value.ShakeCounter
+import com.alarmheaven.alarm.domain.value.TranscriptionPrompt
+import com.alarmheaven.alarm.domain.value.TranscriptionPrompts
 import com.alarmheaven.alarm.ui.appLanguage
 import com.alarmheaven.alarm.ui.theme.Bg
 import com.alarmheaven.alarm.ui.theme.Cta

@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.domain.PromptCategory
-import com.alarmheaven.alarm.domain.PromptSelection
-import com.alarmheaven.alarm.domain.TranscriptionPrompts
+import com.alarmheaven.alarm.domain.value.PromptCategory
+import com.alarmheaven.alarm.domain.value.PromptSelection
+import com.alarmheaven.alarm.domain.value.TranscriptionPrompts
 import com.alarmheaven.alarm.ui.appLanguage
 import com.alarmheaven.alarm.ui.theme.Bg
 import com.alarmheaven.alarm.ui.theme.ChipOff

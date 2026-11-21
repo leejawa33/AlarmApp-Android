@@ -4,10 +4,10 @@ import com.alarmheaven.alarm.FakeAlarmDao
 import com.alarmheaven.alarm.FakePermissions
 import com.alarmheaven.alarm.FakeScheduler
 import com.alarmheaven.alarm.TestAssets
-import com.alarmheaven.alarm.domain.AlarmSchedule
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
-import com.alarmheaven.alarm.service.AlarmService
-import com.alarmheaven.alarm.service.SchedulingFailedException
+import com.alarmheaven.alarm.domain.value.AlarmSchedule
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
+import com.alarmheaven.alarm.application.AlarmService
+import com.alarmheaven.alarm.application.SchedulingFailedException
 import com.alarmheaven.alarm.ui.main.MainViewModel
 import java.time.Clock
 import java.time.Instant

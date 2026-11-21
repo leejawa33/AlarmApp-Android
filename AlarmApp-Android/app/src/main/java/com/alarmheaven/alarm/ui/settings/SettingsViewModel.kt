@@ -1,10 +1,10 @@
 package com.alarmheaven.alarm.ui.settings
 
 import androidx.lifecycle.ViewModel
-import com.alarmheaven.alarm.domain.AppLanguage
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
-import com.alarmheaven.alarm.service.AppLanguageStore
-import com.alarmheaven.alarm.service.PermissionStatusSource
+import com.alarmheaven.alarm.domain.value.AppLanguage
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
+import com.alarmheaven.alarm.application.AppLanguageStore
+import com.alarmheaven.alarm.application.PermissionStatusSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

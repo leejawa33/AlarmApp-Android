@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import com.alarmheaven.alarm.FakeAlarmDao
 import com.alarmheaven.alarm.FakeScheduler
 import com.alarmheaven.alarm.TestAssets
-import com.alarmheaven.alarm.catalog.PromptProvider
-import com.alarmheaven.alarm.domain.MissionType
-import com.alarmheaven.alarm.domain.Weekday
-import com.alarmheaven.alarm.service.AlarmService
+import com.alarmheaven.alarm.adapter.catalog.PromptProvider
+import com.alarmheaven.alarm.domain.value.MissionType
+import com.alarmheaven.alarm.domain.value.Weekday
+import com.alarmheaven.alarm.application.AlarmService
 import com.alarmheaven.alarm.ui.edit.EditViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

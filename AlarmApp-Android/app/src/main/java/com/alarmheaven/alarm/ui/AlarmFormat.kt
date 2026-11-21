@@ -2,11 +2,11 @@ package com.alarmheaven.alarm.ui
 
 import android.content.Context
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.catalog.AssetCatalog
-import com.alarmheaven.alarm.domain.AlarmSchedule
-import com.alarmheaven.alarm.domain.AlarmValidationError
-import com.alarmheaven.alarm.domain.Weekday
-import com.alarmheaven.alarm.service.SchedulingFailedException
+import com.alarmheaven.alarm.adapter.catalog.AssetCatalog
+import com.alarmheaven.alarm.domain.value.AlarmSchedule
+import com.alarmheaven.alarm.domain.model.AlarmValidationError
+import com.alarmheaven.alarm.domain.value.Weekday
+import com.alarmheaven.alarm.application.SchedulingFailedException
 import java.util.Locale
 
 /** 화면 표시용 문구 조합. 문구 원본은 strings.xml(한/영). iOS의 `Strings` 헬퍼에 해당한다. */

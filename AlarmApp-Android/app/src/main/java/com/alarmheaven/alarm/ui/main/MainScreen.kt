@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import com.alarmheaven.alarm.ui.settings.PermissionProblem
 import com.alarmheaven.alarm.ui.components.RoundButton
 import com.alarmheaven.alarm.ui.components.GhostButton
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
-import com.alarmheaven.alarm.platform.openAlarmPermissionSettings
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
+import com.alarmheaven.alarm.adapter.device.openAlarmPermissionSettings
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.Lifecycle
 import androidx.compose.material.icons.filled.Settings

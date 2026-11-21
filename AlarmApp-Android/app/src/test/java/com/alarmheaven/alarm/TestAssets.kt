@@ -1,7 +1,7 @@
 package com.alarmheaven.alarm
 
-import com.alarmheaven.alarm.catalog.AssetCatalog
-import com.alarmheaven.alarm.domain.TranscriptionPrompts
+import com.alarmheaven.alarm.adapter.catalog.AssetCatalog
+import com.alarmheaven.alarm.domain.value.TranscriptionPrompts
 import java.io.File
 
 /** JVM 단위 테스트에서 `src/main/assets`를 직접 읽는다(Gradle 테스트의 작업 디렉터리 = app 모듈). */

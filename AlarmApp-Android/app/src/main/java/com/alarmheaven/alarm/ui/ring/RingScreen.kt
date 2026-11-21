@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.domain.MissionType
+import com.alarmheaven.alarm.domain.value.MissionType
 import com.alarmheaven.alarm.ui.appLanguage
 import com.alarmheaven.alarm.ui.components.CtaButton
 import com.alarmheaven.alarm.ui.theme.TextMuted

@@ -20,7 +20,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.alarmheaven.alarm.domain.ShakeCounter
+import com.alarmheaven.alarm.domain.value.ShakeCounter
 
 private fun assetItem(file: String) = MediaItem.fromUri("asset:///$file")
 

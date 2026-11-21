@@ -36,9 +36,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alarmheaven.alarm.R
-import com.alarmheaven.alarm.domain.AppLanguage
-import com.alarmheaven.alarm.platform.openAlarmPermissionSettings
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
+import com.alarmheaven.alarm.domain.value.AppLanguage
+import com.alarmheaven.alarm.adapter.device.openAlarmPermissionSettings
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
 import com.alarmheaven.alarm.ui.components.Block
 import com.alarmheaven.alarm.ui.components.GhostButton
 import com.alarmheaven.alarm.ui.components.RoundButton

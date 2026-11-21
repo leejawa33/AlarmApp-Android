@@ -2,8 +2,8 @@ package com.alarmheaven.alarm.ui
 
 import com.alarmheaven.alarm.FakeLanguageStore
 import com.alarmheaven.alarm.FakePermissions
-import com.alarmheaven.alarm.domain.AppLanguage
-import com.alarmheaven.alarm.service.AlarmPermissionStatus
+import com.alarmheaven.alarm.domain.value.AppLanguage
+import com.alarmheaven.alarm.application.AlarmPermissionStatus
 import com.alarmheaven.alarm.ui.settings.SettingsViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
